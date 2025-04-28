@@ -1,69 +1,90 @@
 #include <stdio.h>
+
+// Часікі і бібліотеки рандомайзера
 #include <stdlib.h>
-#include <time.h>
+#include <time.h> 
 
 int main() {
-    // **Задача 1 
-    int n;
-    printf("Введіть розмірність квадратної матриці (n): ");
-    scanf("%d", &n);
+    int choice;
 
-    double matrix[n][n];
+    srand(time(NULL)); // Ініціалізація ДУЖЕ ЗРУЧНОГО генератора випадкових чисел
 
-    // Ініціалізація ДУЖЕ ЗРУЧНОГО рандомайзера
-    srand(time(NULL));
+    while (1) {
+        printf("\nЧим побалуємося?:\n");
+        printf("1. Згенерувати двовимірний масив\n");
+        printf("2. Ввести квадратну матрицю та знайти мінімальний елемент вище бічної діагоналі.\n");
+        printf("0. Вихід\n");
+        printf("Ваш вибір: ");
+        scanf("%d", &choice);
 
-    printf("Згенерована матриця:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            // Генеруємо випадкове число в діапазоні [-100; 100]
-            matrix[i][j] = (double)(rand() % 201 - 100);
-            printf("%.2f\t", matrix[i][j]);
-        }
-        printf("\n");
-    }
+        if (choice == 0) {
+            printf("Сподіваюсь більше не пригожусь)\n");
+            break;
+        } else if (choice == 1) {
+            int rows, cols;
 
-    // **Задача 2
+            printf("Введіть кількість рядків: ");
+            scanf("%d", &rows);
+            printf("Введіть кількість стовпців: ");
+            scanf("%d", &cols);
 
-    // Ініціалізація minVal першим елементом матриці, якщо елементи вище бічної діагоналі існують
-    double minVal;
-    int minRow = -1, minCol = -1;
-    int found = 0; // Прапорець, щоб визначити, чи є елементи вище бічної діагоналі
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (i + j < n - 1) {
-                minVal = matrix[i][j]; // Перший елемент вище бічної діагоналі
-                minRow = i;
-                minCol = j;
-                found = 1;
-                break; // Перериваємо внутрішній цикл
+            if (rows <= 0 || cols <= 0) {
+                printf("Кількість рядків та стовпців повинна бути більше нуля.\n");
+                continue;
             }
-        }
-        if (found) break; // Перериваємо зовнішній цикл, якщо знайдено хоча б один елемент
-    }
+            int matrix[rows][cols];
+            printf("Згенерований масив:\n");
+            for (int i = 0; i < rows; i++) {
+                for (int j = 0; j < cols; j++) {
+                    matrix[i][j] = (rand() % 201) - 100; // Генерація випадкових чисел від -100 до 100
+                    printf("%d\t", matrix[i][j]);
+                }
+                printf("\n");
+            }
+        } else if (choice == 2) {
+            int n;
 
+            printf("Введіть розмірність квадратної матриці: ");
+            scanf("%d", &n);
 
-    // Знаходимо мінімальний елемент серед елементів вище бічної діагоналі
-     if(found) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                // Перевіряємо, чи знаходиться елемент вище бічної діагоналі
-                if (i + j < n - 1) {
-                    if (matrix[i][j] < minVal) {
-                        minVal = matrix[i][j];
-                        minRow = i;
-                        minCol = j;
+            if (n <= 0) {
+                printf("Розмірність матриці повинна бути більше нуля.\n");
+                continue;
+            }
+
+            int matrix[n][n];
+
+            printf("Введіть елементи матриці:\n");
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    printf("matrix[%d][%d]: ", i, j);
+                    scanf("%d", &matrix[i][j]);
+                }
+            }
+
+            int min_above_secondary = matrix[0][0]; // початкове значення мінімуму 
+            int found = 0; // Флаг, чи знайдено хоч один елемент вище бічної діагоналі
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n - 1 - i; j++) { // i + j < n - 1
+                    if (!found) {
+                        min_above_secondary = matrix[i][j];
+                        found = 1;
+                    }
+                    if (matrix[i][j] < min_above_secondary) {
+                        min_above_secondary = matrix[i][j];
                     }
                 }
             }
+
+            if (!found) {
+                printf("Немає елементів вище бічної діагоналі.\n");
+            } else {
+                printf("Мінімальний елемент вище бічної діагоналі: %d\n", min_above_secondary);
+            }
+        } else {
+            printf("Невірний вибір. Спробуйте ще раз.\n");
         }
+    }
 
-        printf("\nМінімальний елемент вище бічної діагоналі: %.2f\n", minVal);
-        printf("Індекс мінімального елемента: [%d][%d]\n", minRow, minCol);
-
-     } else {
-          printf("\nНемає елементів вище бічної діагоналі.\n");
-     }
     return 0;
 }
