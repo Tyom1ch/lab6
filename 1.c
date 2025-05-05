@@ -1,5 +1,15 @@
 #include <stdio.h>
 
+void printMatrix(int rows, int cols, int matrix[rows][cols]) {
+    printf("Матриця:\n");
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%5d ", matrix[i][j]);  // форматування для вирівнювання
+        }
+        printf("\n");
+    }
+}
+
 int main() {
     int choice;
 
@@ -25,6 +35,8 @@ int main() {
                         scanf("%d", &matrix1[i][j]);
                     }
                 }
+
+                printMatrix(n, n, matrix1);
 
                 printf("\nГоловна діагональ: ");
                 for (int i = 0; i < n; i++) {
@@ -64,6 +76,8 @@ int main() {
                         scanf("%d", &matrix2[i][j]);
                     }
                 }
+
+                printMatrix(n, m, matrix2);
 
                 int minVal = matrix2[0][0];
                 int maxVal = matrix2[0][0];
