@@ -1,109 +1,84 @@
 #include <stdio.h>
-
-// Часікі і бібліотеки рандомайзера
 #include <stdlib.h>
 #include <time.h>
 
+// === Кольори ===
+#define RESET   "\033[0m"
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define MAGENTA "\033[1;35m"
+
 int main() {
-  int choice;
+    int choice;
+    srand(time(NULL));
 
-  srand(time(NULL)); // Ініціалізація ДУЖЕ ЗРУЧНОГО генератора випадкових чисел
+    while (1) {
+        printf("\n==== Що робимо? ===\n");
+        printf("1. Згенерувати квадратну матрицю і знайти мінімум вище бічної діагоналі\n");
+        printf("0. Вийти з програми\n");
+        printf(MAGENTA "Ваш вибір: " RESET);
+        scanf("%d", &choice);
 
-  while (1) {
-    printf("\nЧим побалуємося?:\n");
-    printf("1. Згенерувати двовимірний масив\n");
-    printf("2. Ввести квадратну матрицю та знайти мінімальний елемент вище "
-           "бічної діагоналі.\n");
-    printf("0. Вихід\n");
-    printf("Ваш вибір: ");
-    scanf("%d", &choice);
+        if (choice == 0) {
+            printf(GREEN "Виходимо..\n" RESET);
+            break;
+        } else if (choice == 1) {
+            int n;
+            printf("Введи розмірність квадратної матриці (n): ");
+            scanf("%d", &n);
 
-    if (choice == 0) {
-      printf("Сподіваюсь більше не пригожусь)\n");
-      break;
-    } else if (choice == 1) {
-      int rows, cols;
+            if (n <= 0) {
+                printf(RED "Розмірність матриці має бути більше 0. Не сміши.\n" RESET);
+                continue;
+            }
 
-      printf("Введіть кількість рядків: ");
-      scanf("%d", &rows);
-      printf("Введіть кількість стовпців: ");
-      scanf("%d", &cols);
+            int matrix[n][n];
 
-      if (rows <= 0 || cols <= 0) {
-        printf("Кількість рядків та стовпців повинна бути більше нуля.\n");
-        continue;
-      }
-      int matrix[rows][cols];
-      for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-          matrix[i][j] = (rand() % 201) -
-                         100; // Генерація випадкових чисел від -100 до 100
+            // Генерація матриці
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = rand() % 201 - 100;
+                }
+            }
+
+            // Вивід матриці з кольорами
+            printf(MAGENTA "Згенерована матриця:\n" RESET);
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (matrix[i][j] > 0) {
+                        printf(GREEN "%5d " RESET, matrix[i][j]);
+                    } else if (matrix[i][j] < 0) {
+                        printf(RED "%5d " RESET, matrix[i][j]);
+                    } else {
+                        printf("%5d ", matrix[i][j]);
+                    }
+                }
+                printf("\n");
+            }
+
+            // Пошук мінімуму вище бічної діагоналі
+            int min = 0, found = 0;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n - 1 - i; j++) {
+                    if (!found) {
+                        min = matrix[i][j];
+                        found = 1;
+                    } else if (matrix[i][j] < min) {
+                        min = matrix[i][j];
+                    }
+                }
+            }
+
+            if (found) {
+                printf(MAGENTA "Мінімальний елемент вище бічної діагоналі: " RESET "%d\n", min);
+            } else {
+                printf(RED "Немає елементів вище бічної діагоналі.\n" RESET);
+            }
+
+        } else {
+            printf(RED "Немає такого варіанту. Спробуй ще раз.\n" RESET);
         }
-      }
-
-      // Функція гарного виводу матриці
-      printf("Матриця:\n");
-      for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-          printf("%5d ", matrix[i][j]); // Вирівнювання по ширині
-        }
-        printf("\n");
-      }
-
-    } else if (choice == 2) {
-      int n;
-
-      printf("Введіть розмірність квадратної матриці: ");
-      scanf("%d", &n);
-
-      if (n <= 0) {
-        printf("Розмірність матриці повинна бути більше нуля.\n");
-        continue;
-      }
-
-      int matrix[n][n];
-
-      printf("Введіть елементи матриці:\n");
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          printf("matrix[%d][%d]: ", i, j);
-          scanf("%d", &matrix[i][j]);
-        }
-      }
-
-      // Функція гарного виводу матриці
-      printf("Матриця:\n");
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-          printf("%5d ", matrix[i][j]); // Вирівнювання по ширині
-        }
-        printf("\n");
-      }
-
-      int min_above_secondary = matrix[0][0]; // початкове значення мінімуму
-      int found = 0; // Флаг, чи знайдено хоч один елемент вище бічної діагоналі
-      for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n - 1 - i; j++) { // i + j < n - 1
-          if (!found) {
-            min_above_secondary = matrix[i][j];
-            found = 1;
-          }
-          if (matrix[i][j] < min_above_secondary) {
-            min_above_secondary = matrix[i][j];
-          }
-        }
-      }
-
-      if (!found) {
-        printf("Немає елементів вище бічної діагоналі.\n");
-      } else {
-        printf("Мінімальний елемент вище бічної діагоналі: %d\n",
-               min_above_secondary);
-      }
-    } else {
-      printf("Невірний вибір. Спробуйте ще раз.\n");
     }
-  }
 
-  return 0;
+    return 0;
 }
